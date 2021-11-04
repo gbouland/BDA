@@ -1,0 +1,92 @@
+---
+title: "runAnalysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{runAnalysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+In this vignette the `BDA` package is showcased with a few examples.
+
+## Load package
+
+```{r setup}
+library(BDA)
+library(SeuratObject)
+```
+
+## Load example data
+
+This is an example data set. The data was part of **Grubman, A., Chew, G., Ouyang, J.F. et al. A single-cell atlas of entorhinal cortex from individuals with Alzheimer’s disease reveals cell-type-specific gene expression regulation. Nat Neurosci 22, 2087–2097 (2019). https://doi.org/10.1038/s41593-019-0539-4** and was downloaded from `http://adsn.ddnetbio.com/`.
+
+```{r}
+data("dataAD")
+object <- CreateSeuratObject(dataAD$counts)
+object[["celltype"]] <- dataAD$meta.data$celltype
+object[["status"]] <- dataAD$meta.data$status
+```
+
+From the meta data we extracted the cell type annotations and diagnosis of individuals and added those to the seurat object. That can be seen below.
+
+```{r}
+table(object$celltype,object$status)
+```
+
+## Run BDA
+
+To run the BDA at least the following arguments are required:
+
+* **object** A seurat object.
+* **contrast.by** Column in which the contrasting cell populations are defined.
+* **ident.1** First cell population of contrasting cell populations.
+* **ident.2** Second cell population of contrasting cell populations.
+* **p.adjust.method** Multiple testing correction method.
+
+Optional arguments:
+
+* **group.by** Column in which groups are defined. For each group differential dropout analysis will be performed between the contrasting populations.
+* **cell.populations** Groups of cells for which the differential dropout analysis will be performed separately.
+* **min.pct** Only tested genes that were expressed in at least min.pct the cells in either of the respective groups of interest.
+* **covariates** Covariates
+* **n.cores** Number of cores. When multicore is enabled, progress bar cannot be displayed.
+ 
+In the example below, we ignore the cell type annotations and compare if there a genes that are differential dropouts when comparing healthy controls `ct` with individuals diagnosed with AD `AD`.
+
+```{r, eval = FALSE}
+results <- BDA(object = object,
+              contrast.by = "status", ident.1 = "ct", ident.2 = "AD",
+              p.adjust.method = "fdr", min.pct = 0.5) #Default min.pct = 0.1
+```
+
+Instead of comparing based on diagnosis, we can also compare between cell types. In the example below, we compare neurons with OPCs.
+
+```{r, eval = FALSE}
+results <- BDA(object = object,
+              contrast.by = "celltype", ident.1 = "neuron", ident.2 = "OPC",
+              p.adjust.method = "fdr",min.pct = 0.5)
+```
+
+Now, we will also use the optional arguments `group.by` and `cell.populations`. In the example below for each cell population that we defined with `cell.population` we will test separately if there are genes that are differential dropouts between `ct` and `AD`.
+
+```{r, results='hide'}
+results <- BDA(object = object,
+               contrast.by = "status", ident.1 = "ct", ident.2 = "AD",
+               group.by = "celltype", cell.populations = c("neuron","mg","OPC"),
+               p.adjust.method = "fdr",min.pct = 0.5)
+```
+
+### Session info
+
+```{r}
+sessionInfo()
+```
+

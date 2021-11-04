@@ -1,0 +1,39 @@
+Package: BDA
+Type: Package
+Title: Binary Differential analysis
+Version: 0.1.0
+Authors@R: 
+    c(person(given = "Gerard",
+             family = "Bouland",
+             role = c("aut", "cre"),
+             email = "g.a.bouland@tudelft.nl"),
+      person(given = "Ahmed",
+             family = "Mahfouz",
+             role = "aut",
+             email = "a.Mahfouz@lumc.nl"),
+      person(given = "Marcel",
+             family = "Reinders",
+             role = "aut",
+             email = "m.j.t.Reinders@tudelft.nl"))
+Description: Performs Binary Differential analysis (BDA) on single cell RNA
+  sequencing data. Instead of relying on changes in the expression value of genes
+  across cell populations, which can be sparse and are subject to many
+  pre-processing steps, BDA uses the binary gene expression patterns across
+  biological distinct cell populations, i.e. are there more or less zeros for a
+  gene in condition A compared to condition B.
+License: GPL-3
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.1
+Depends:
+  R (>= 4.0.0)
+Imports:  
+  SeuratObject(>= 4.0.0),
+  ggplot2(>= 3.3.3),
+  Matrix,
+  foreach(>= 1.5.1),
+  doParallel(>= 1.0.16),
+  knitr(>= 1.31)
+VignetteBuilder: 
+    knitr
+LazyDataCompression: bzip2
