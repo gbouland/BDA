@@ -16,8 +16,9 @@
 mcBDA <- function(tmp_binaryMatrix ,tmp_samplesheet, contrast.by, ident.1,
                   ident.2, covariates, cores, method){
 
-  geneList <- split(sample(rownames(tmp_binaryMatrix)),
+  geneList <- split(rownames(tmp_binaryMatrix),
                     sort(1:length(rownames(tmp_binaryMatrix))%%cores))
+
   subCounts <- vector("list", length = cores)
   for(i in 1:cores){
     subCounts[[i]] <- as.matrix(tmp_binaryMatrix[geneList[[i]],])
